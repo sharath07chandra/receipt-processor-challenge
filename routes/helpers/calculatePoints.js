@@ -39,8 +39,6 @@ function calculatePoints(receipt) {
         totalPoints += 10;
     }
 
-    console.log(totalPoints, 'total points');
-
     return totalPoints;
 }
 

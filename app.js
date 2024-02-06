@@ -1,6 +1,7 @@
 import express from 'express';
-import { json } from 'body-parser';
-import receiptsRouter from './routes/receiptsRouter';
+import pkg from 'body-parser';
+const { json } = pkg;
+import receiptsRouter from './routes/receiptsRouter.js';
 
 const app = express();
 app.use(json());
