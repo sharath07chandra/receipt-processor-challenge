@@ -1,14 +1,12 @@
 {
   "name": "receipt-processor-challenge",
   "version": "1.0.0",
-  "description": "Build a webservice that fulfils the documented API. The API is described below. A formal definition is provided  in the [api.yml](./api.yml) file, but the information in this README is sufficient for completion of this challenge. We will use the  described API to test your solution.",
+  "description": "Build a webservice that fulfils the documented API.A formal definition is provided in the [api.yml](./api.yml) file.",
   "main": "app.js",
-  "directories": {
-    "example": "examples"
-  },
   "scripts": {
     "test": "jest",
-    "start": "nodemon app.js"
+    "start": "npm test && node app.cjs",
+    "start-dev": "nodemon app.cjs"
   },
   "repository": {
     "type": "git",
@@ -24,7 +22,8 @@
     "body-parser": "^1.20.2",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

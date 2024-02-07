@@ -42,4 +42,4 @@ function calculatePoints(receipt) {
     return totalPoints;
 }
 
-export default calculatePoints;
+module.exports = calculatePoints;

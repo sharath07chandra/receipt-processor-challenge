@@ -1,8 +1,9 @@
-import express from 'express';
+const express = require('express');
+const { logError, logInfo } = require('../logger/logger.cjs');
 const router = express.Router();
-import { v4 } from 'uuid';
-import calculatePoints from './helpers/calculatePoints.js';
-import { body, param, validationResult } from 'express-validator';
+const { v4: uuid4 } = require('uuid');
+const calculatePoints = require('./helpers/calculatePoints.cjs');
+const { body, param, validationResult } = require('express-validator');
 
 
 // In-memory storage for receipts
@@ -10,7 +11,7 @@ const receipts = {};
 
 // Validation middleware for /receipts/process endpoint
 const validateReceipt = [
-    body('retailer').isString().matches(/^[\w\s\-]+$/),
+    body('retailer').isString().matches(/^[\w\s\S\-]+$/),
     body('purchaseDate').isString().isISO8601(),
     body('purchaseTime').isString().matches(/^\d{2}:\d{2}$/),
     body('items').isArray({ min: 1 }),
@@ -21,16 +22,18 @@ const validateReceipt = [
 router.post('/process', validateReceipt, (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        logError('Validation error in POST /receipts/process', JSON.stringify(errors.array()));
         return res.status(400).json({ errors: errors.array() });
     }
 
     const receipt = req.body;
-    const id = v4();
+    const id = uuid4();
     const points = calculatePoints(receipt);
 
     // Store receipt data in memory
     receipts[id] = { receipt, points };
 
+    logInfo(`Receipt processed successfully. ID: ${id}`);
     res.status(200).json({ id });
 });
 
@@ -43,6 +46,7 @@ const validateIdParam = [
 router.get('/:id/points', validateIdParam, (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        logError('Validation error in GET /:id/points', JSON.stringify(errors.array()));
         return res.status(400).json({ errors: errors.array() });
     }
 
@@ -50,11 +54,13 @@ router.get('/:id/points', validateIdParam, (req, res) => {
     const receiptData = receipts[id];
 
     if (!receiptData) {
+        logError(`Receipt not found, ID: ${id}`, "");
         return res.status(404).json({ error: 'Receipt not found' });
     }
 
     const { points } = receiptData;
+    logInfo(`Points returned successfully. ID: ${id}, POINTS: ${points}`);
     res.status(200).json({ points });
 });
 
-export default router;
+module.exports = router;
